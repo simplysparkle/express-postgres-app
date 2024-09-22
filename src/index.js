@@ -5,7 +5,7 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Create a new PostgreSQL pool
+// Set up PostgreSQL pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -13,21 +13,16 @@ const pool = new Pool({
   },
 });
 
+app.use(express.json());  // Middleware to parse incoming JSON data
 
-
-
-app.use(express.json());  // Parse incoming JSON requests
-
-
-// Root route to prevent showing raw code
+// Root route to avoid raw code display
 app.get('/', (req, res) => {
-  res.send('API is working. Use the appropriate endpoints.');
+  res.send('API is working. Use appropriate endpoints.');
 });
 
-// Endpoint to submit appointment form data
+// Endpoint for appointments submission
 app.post('/api/appointments', async (req, res) => {
   const { firstName, lastName, mobileNumber, email, service, date, time } = req.body;
-
   try {
     const result = await pool.query(
       `INSERT INTO appointments (first_name, last_name, mobile_number, email, service, date, time)
@@ -41,31 +36,23 @@ app.post('/api/appointments', async (req, res) => {
   }
 });
 
-// Endpoint to fetch appointment details (filtered by mobile number or date)
+// Endpoint for fetching appointment details
 app.get('/api/appointment-details', async (req, res) => {
   const { mobileNumber, date } = req.query;
-
   try {
     let query;
     let queryParams;
 
-    // Check if both mobile number and date are provided
     if (mobileNumber && date) {
       query = `SELECT * FROM appointments WHERE mobile_number = $1 AND date = $2`;
       queryParams = [mobileNumber, date];
-    } 
-    // If only mobile number is provided
-    else if (mobileNumber) {
+    } else if (mobileNumber) {
       query = `SELECT * FROM appointments WHERE mobile_number = $1`;
       queryParams = [mobileNumber];
-    } 
-    // If only date is provided
-    else if (date) {
+    } else if (date) {
       query = `SELECT * FROM appointments WHERE date = $1`;
       queryParams = [date];
-    } 
-    // If neither mobile number nor date is provided
-    else {
+    } else {
       return res.status(400).json({ message: 'Please provide a mobile number or date to filter the appointments' });
     }
 
@@ -84,5 +71,5 @@ app.get('/api/appointment-details', async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
