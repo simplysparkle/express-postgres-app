@@ -1,14 +1,13 @@
 {
-  "name": "express-postgres-app",
+  "name": "your-project",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node api/index.js"
   },
   "dependencies": {
-    "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "pg": "^8.13.0"
+    "pg": "^8.6.0",
+    "dotenv": "^10.0.0"
   }
 }
